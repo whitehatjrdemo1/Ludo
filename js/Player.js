@@ -25,6 +25,7 @@ class Player {
       [275, 325],
     ];
     var path2 = [
+      [325, 275],
       [325, 225],
       [325, 175],
       [325, 125],
@@ -81,9 +82,9 @@ class Player {
       [125, 425],
       [75, 425],
       [25, 425],
+      [25, 375],
     ];
     var path12 = [
-      [25, 375],
       [75, 375],
       [125, 375],
       [175, 375],
@@ -115,83 +116,92 @@ class Player {
     ];
 
     if (this.index === 1) {
-      this.path = concat(
-        path1,
-        path2,
-        path3,
-        path4,
-        path5,
-        path6,
-        path7,
-        path8,
-        path9,
-        path10,
-        path11,
-        path12,
-        home
-      );
+      this.path = this.path.concat(path1);
+
+      this.path = this.path.concat(path2);
+      this.path = this.path.concat(path3);
+      this.path = this.path.concat(path4);
+      this.path = this.path.concat(path5);
+
+      this.path = this.path.concat(path6);
+
+      this.path = this.path.concat(path7);
+
+      this.path = this.path.concat(path8);
+
+      this.path = this.path.concat(path9);
+      this.path = this.path.concat(path10);
+      this.path = this.path.concat(path11);
+      this.path = this.path.concat(path12);
+      this.path = this.path.concat(home);
+
       this.start = [[150, 150]];
     }
     if (this.index === 2) {
-      this.path = concat(
-        path4,
-        path5,
-        path6,
-        path7,
-        path8,
-        path9,
-        path10,
-        path11,
-        path12,
-        path13,
-        path1,
-        path2,
-        path14,
-        home
-      );
+      this.path = this.path.concat(path4);
+      this.path = this.path.concat(path5);
+
+      this.path = this.path.concat(path6);
+
+      this.path = this.path.concat(path7);
+
+      this.path = this.path.concat(path8);
+
+      this.path = this.path.concat(path9);
+      this.path = this.path.concat(path10);
+      this.path = this.path.concat(path11);
+      this.path = this.path.concat(path13);
+      this.path = this.path.concat(path1);
+
+      this.path = this.path.concat(path2);
+      this.path = this.path.concat(path14);
+
+      this.path = this.path.concat(home);
+
       this.start = [[600, 150]];
     }
     if (this.index === 3) {
-      this.path = concat(
-        path7,
-        path8,
-        path9,
-        path10,
-        path11,
-        path12,
-        path13,
-        path14,
-        path1,
-        path2,
-        path3,
-        path4,
-        path5,
-        path15,
-        home
-      );
+      this.path = this.path.concat(path7);
+
+      this.path = this.path.concat(path8);
+
+      this.path = this.path.concat(path9);
+      this.path = this.path.concat(path10);
+      this.path = this.path.concat(path11);
+      this.path = this.path.concat(path13);
+
+      this.path = this.path.concat(path1);
+
+      this.path = this.path.concat(path2);
+      this.path = this.path.concat(path3);
+      this.path = this.path.concat(path4);
+      this.path = this.path.concat(path5);
+      this.path = this.path.concat(path15);
+      this.path = this.path.concat(home);
+
       this.start = [[600, 600]];
     }
     if (this.index === 4) {
-      this.path = concat(
-        path10,
-        path11,
-        path12,
-        path13,
-        path1,
-        path2,
-        path3,
-        path4,
-        path5,
-        path6,
-        path7,
-        path8,
-        path16
-      );
+      this.path = this.path.concat(path10);
+      this.path = this.path.concat(path11);
+
+      this.path = this.path.concat(path13);
+      this.path = this.path.concat(path1);
+
+      this.path = this.path.concat(path2);
+      this.path = this.path.concat(path3);
+      this.path = this.path.concat(path4);
+      this.path = this.path.concat(path5);
+
+      this.path = this.path.concat(path6);
+
+      this.path = this.path.concat(path7);
+
+      this.path = this.path.concat(path8);
+      this.path = this.path.concat(path16);
+      this.path = this.path.concat(home);
+
       this.start = [[150, 600]];
-    }
-    for (var i = 0; i < this.path.length; i++) {
-      fill("yellow");
-      ellipse(this.path[i][0], this.path[i][1], 5, 5);
     }
   }
   playerScore(peg) {
@@ -209,44 +219,54 @@ class Player {
     var bool = true;
     var boolfinal = true;
     var any1, any2, any3, any4;
-    var num1, num2, num3;
+    var num1,
+      num2 = true,
+      num3 = true;
     for (var i = arr.length - 1; i >= 0; i--) {
+      //1 &0
       for (var j = 0; j < 4; j++) {
-        
+        //0,1,2,3
         if (
           this.pegs[j].x === this.start[0][0] &&
           this.pegs[j].y === this.start[0][1]
         ) {
+          //all pegs at start
           if (arr[i] === 6) {
+            bool = true; //true
+            console.log(bool);
+          } else if (arr.length > 1) {
             bool = true;
-           
-          } else if (i > arr.length - 1) {
-            bool = true;
+            console.log(bool);
+          } else {
+            bool = false;
+            console.log(bool);
           }
         } else {
-          for (var i = 0; i < this.path.length; i++) {
+          for (var k = 0; k < this.path.length; k++) {
             if (
-              this.path[i][0] === this.pegs[j].x &&
-              this.path[i][1] === this.pegs[j].y
+              this.path[k][0] === this.pegs[j].x &&
+              this.path[k][1] === this.pegs[j].y
             ) {
-              if (i + arr[i] <= this.path.length - 1) {
+              if (i + arr[i] < this.path.length) {
                 bool = true;
+                console.log(bool);
               } else {
                 bool = false;
+                console.log(bool);
               }
             }
           }
         }
-        if (j === 1) {
+        if (j === 0) {
           any1 = bool;
         }
-        if (j === 2) {
+        if (j === 1) {
           any2 = bool;
         }
-        if (j === 3) {
+        if (j === 2) {
           any3 = bool;
         }
-        if (j === 4) {
+        if (j === 3) {
           any4 = bool;
         }
         if (any1 === true || any2 === true || any3 === true || any4 === true) {
@@ -256,14 +276,17 @@ class Player {
         }
         //this.pegs[j].active = false;
       }
-      if (i === 1) {
+      if (i === 0) {
         num1 = boolfinal;
+        console.log(boolfinal);
+      }
+      if (i === 1) {
+        num2 = boolfinal;
+        console.log(boolfinal);
       }
       if (i === 2) {
-        num2 = boolfinal;
-      }
-      if (i === 3) {
         num3 = boolfinal;
+        console.log(boolfinal);
       }
     }
     if ((num3 === true) & (num2 === true) && num1 === true) {
@@ -271,6 +294,8 @@ class Player {
     } else {
       boolfinal = false;
     }
+    console.log(boolfinal);
+
     return boolfinal;
     // return bool;
   }

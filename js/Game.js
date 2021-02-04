@@ -86,6 +86,10 @@ class Game {
     player.getCarsAtEnd();
     this.getLastRoll();
     this.squares();
+    for (var i = 0; i < player.path.length; i++) {
+      fill(player.color);
+      ellipse(player.path[i][0], player.path[i][1], 5, 5);
+    }
     textSize(15);
     text(
       "You are playing Player" + player.index + ", " + player.color,
@@ -106,8 +110,9 @@ class Game {
           players[index - 1][i - 1].x = allPlayers[plr][pegindex].x;
           players[index - 1][i - 1].y = allPlayers[plr][pegindex].y;
 
-          
           players[index - 1][i - 1].color = allPlayers[plr].color;
+          players[index - 1][i - 1].active = allPlayers[plr][pegindex].active;
+          
         }
         text(
           allPlayers[plyrIndx].name + ", " + plyrIndx + " is the active player",
@@ -163,8 +168,35 @@ class Game {
     text(mouseX + "," + mouseY, mouseX, mouseY);
   }
 
+  checkPosition(peg) {
+    for (var plr in allPlayers) {
+      for (var i = 0; i < 4; i++) {
+        var playerIndex = "player" + i;
+        var pegindex = "peg" + i;
+        if (player.index != i) {
+          if (
+            peg.x === allPlayers[plr][pegindex].x &&
+            peg.y === allPlayers[plr][pegindex].y
+          ) {
+            //allPlayers[plr][pegindex].active=false
+            database.ref("players/" + playerIndex + "/" + pegIndex).update({
+              active: false,
+            });
+          }
+        }
+      }
+    }
+  }
+
   playerTurn() {
     var count = 0;
+    for(var i=0;i<4;i++){
+      if(player.pegs[i].active===false){
+        player.pegs[i].x=player.start[0][0]
+        player.pegs[i].y=player.start[0][1]
+
+      }
+    }
 
     if (turn === player.index) {
       if (playState === "wait") {
@@ -179,8 +211,8 @@ class Game {
             player.diceSum = [];
           }
         } else {
-          if (player.isMovePossible(player.diceSum) != false) {
-            playState = "move";
+          if (player.isMovePossible(player.diceSum)) {
+            playState = "selectpeg";
           } else {
             playState = "wait";
             player.diceSum = [];
@@ -189,14 +221,14 @@ class Game {
       }
 
       if (playState === "move") {
-       
         if (player.movePeg(player.diceSum[0], selectedpeg)) {
           player.diceSum.splice(0, 1);
 
           console.log("peg moved");
+          this.checkPosition(selectedpeg);
           player.update();
         }
-   
+
         if (player.diceSum.length === 0) {
           playState = "wait";
         } else {
@@ -204,13 +236,12 @@ class Game {
         }
 
         player.playerScore(selectedpeg);
-
+        this.checkPosition();
         if (player.score === 4) {
           gameState = 2;
           player.update();
           this.update(2);
         }
-    
       }
       if (playState === "wait") {
         if (turn === 4) {
@@ -246,13 +277,11 @@ class Game {
           var pegindex = "peg" + i;
           players[index - 1].x = allPlayers[plr][pegindex].x;
           players[index - 1].y = allPlayers[plr][pegindex].y;
-       
         }
       }
     }
 
     this.playerTurn();
-  
   }
   squares() {
     stroke(0);

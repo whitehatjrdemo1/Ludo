@@ -44,7 +44,8 @@ class Form {
       player.index = playerCount;
       player.color = colourArray[playerCount - 1];
       player.createPath();
-      console.log(player.start);
+      console.log(player.path);
+
       player.peg1.x = player.start[0][0];
       player.peg1.y = player.start[0][1];
       player.peg2.x = player.start[0][0];
