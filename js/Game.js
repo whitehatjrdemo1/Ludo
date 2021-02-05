@@ -112,7 +112,6 @@ class Game {
 
           players[index - 1][i - 1].color = allPlayers[plr].color;
           players[index - 1][i - 1].active = allPlayers[plr][pegindex].active;
-          
         }
         text(
           allPlayers[plyrIndx].name + ", " + plyrIndx + " is the active player",
@@ -150,12 +149,21 @@ class Game {
         } else if (playState === "selectpeg") {
           text("Please Select the Peg", 800, 220);
         } else if (playState === "roll") {
-          text("Please Click on the Dice to Roll it", 800, 220);
+          text("Please Click the Dice to Roll it", 800, 220);
         } else if (playState === "rollagain") {
-          text("Please Click on the Dice to Roll it again", 800, 220);
+          text("Please Click the Dice to Roll it again", 800, 220);
+        } else if (playState === "pegtaken") {
+          text("Peg Taken. Please Click the Dice to Roll it again", 800, 220);
         }
       }
     }
+    for (var i = 0; i < 4; i++) {
+      if (player.pegs[i].active === false) {
+        player.pegs[i].x = player.start[0][0];
+        player.pegs[i].y = player.start[0][1];
+      }
+    }
+
     this.playerTurn();
     for (var i = 0; i < 4; i++) {
       for (var j = 0; j < 4; j++) {
@@ -169,19 +177,32 @@ class Game {
   }
 
   checkPosition(peg) {
+    var index = 0;
     for (var plr in allPlayers) {
-      for (var i = 0; i < 4; i++) {
-        var playerIndex = "player" + i;
-        var pegindex = "peg" + i;
-        if (player.index != i) {
+      index++;
+      if (player.index != index) {
+        for (var i = 1; i < 5; i++) {
+          //  var playerIndex = "player" + i;
+          var pegindex = "peg" + i;
+          var plyrIndex = "player" + index;
           if (
-            peg.x === allPlayers[plr][pegindex].x &&
-            peg.y === allPlayers[plr][pegindex].y
+            !(
+              allPlayers[plyrIndex][pegindex].x ===
+                allPlayers[plyrIndex].path[0][0] &&
+              allPlayers[plyrIndex][pegindex].y ===
+                allPlayers[plyrIndex].path[0][1]
+            )
           ) {
-            //allPlayers[plr][pegindex].active=false
-            database.ref("players/" + playerIndex + "/" + pegIndex).update({
-              active: false,
-            });
+            if (
+              peg.x === allPlayers[plyrIndex][pegindex].x &&
+              peg.y === allPlayers[plyrIndex][pegindex].y
+            ) {
+              //allPlayers[plr][pegindex].active=false
+              database.ref("players/" + plr + "/" + pegIndex).update({
+                active: false,
+              });
+              playState = "pegtaken";
+            }
           }
         }
       }
@@ -190,13 +211,6 @@ class Game {
 
   playerTurn() {
     var count = 0;
-    for(var i=0;i<4;i++){
-      if(player.pegs[i].active===false){
-        player.pegs[i].x=player.start[0][0]
-        player.pegs[i].y=player.start[0][1]
-
-      }
-    }
 
     if (turn === player.index) {
       if (playState === "wait") {
@@ -210,13 +224,38 @@ class Game {
           if (count >= 3) {
             player.diceSum = [];
           }
-        } else {
-          if (player.isMovePossible(player.diceSum)) {
-            playState = "selectpeg";
-          } else {
-            playState = "wait";
-            player.diceSum = [];
+        } else if (player.isMovePossible(player.diceSum) === true) {
+          playState = "selectpeg";
+          // } else {
+          //   playState = "wait";
+          //   player.diceSum = [];
+          // }
+        } else if (player.diceSum.length > 1) {
+          console.log("6+something");
+          var arrSum = [];
+          for (var i = 0; i < player.diceSum.length - 1; i++) {
+            arrSum.push(player.diceSum[i] + player.diceSum[i + 1]);
           }
+          arrSum.push(player.diceSum[0] + player.diceSum.length - 1);
+          console.log(arrSum);
+
+          if (player.isMovePossible(arrSum)) {
+            playState = "selectpeg";
+          } else if (player.diceSum.length === 3) {
+            arrSum = [];
+            arrSum.push(
+              player.diceSum[0] + player.diceSum[1] + player.diceSum[2]
+            );
+            if (player.isMovePossible(arrSum)) {
+              playState = "selectpeg";
+            } else {
+              playState = "wait";
+              player.diceSum = [];
+            }
+          }
+        } else {
+          playState = "wait";
+          player.diceSum = [];
         }
       }
 
@@ -227,20 +266,22 @@ class Game {
           console.log("peg moved");
           this.checkPosition(selectedpeg);
           player.update();
-        }
 
-        if (player.diceSum.length === 0) {
-          playState = "wait";
+          if (player.diceSum.length === 0) {
+            playState = "wait";
+            player.diceSum = [];
+          } else {
+            playState = "selectpeg";
+          }
+
+          player.playerScore(selectedpeg);
+          if (player.score === 4) {
+            gameState = 2;
+            player.update();
+            this.update(2);
+          }
         } else {
           playState = "selectpeg";
-        }
-
-        player.playerScore(selectedpeg);
-        this.checkPosition();
-        if (player.score === 4) {
-          gameState = 2;
-          player.update();
-          this.update(2);
         }
       }
       if (playState === "wait") {

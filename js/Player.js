@@ -294,6 +294,7 @@ class Player {
     } else {
       boolfinal = false;
     }
+
     console.log(boolfinal);
 
     return boolfinal;
@@ -365,6 +366,7 @@ class Player {
         y: this.peg4.y,
       },
       diceRoll: this.diceSum,
+      path: this.path,
     });
   }
 

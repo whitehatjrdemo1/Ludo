@@ -60,7 +60,12 @@ function draw() {
 }
 
 function mouseClicked() {
-  if (homeSprite.isClicked() && playState === "roll") {
+  if (
+    homeSprite.isClicked() &&
+    (playState === "roll" ||
+      playState === "rollagain" ||
+      playState === "pegtaken")
+  ) {
     var num = Math.round(random(1, 6));
     player.diceSum.push(num);
 
